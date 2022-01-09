@@ -1,0 +1,13 @@
+---
+source: src/tests.rs
+assertion_line: 49
+expression: "format!(\"{:?}\", report)"
+
+---
+Oh no, this program crashed!
+
+[31mUnable to talk to daemon[0m
+Caused by:
+   0: [33mConnection refused (os error 61)[0m
+
+[36mPlease report this issue to ...[0m

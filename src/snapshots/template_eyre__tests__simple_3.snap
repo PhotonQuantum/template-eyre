@@ -1,0 +1,11 @@
+---
+source: src/tests.rs
+assertion_line: 69
+expression: "format!(\"{:?}\", report)"
+
+---
+Unable to talk to daemon
+Caused by:
+   0: Connection refused
+   1: os error 61
+

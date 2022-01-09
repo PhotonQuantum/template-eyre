@@ -1,0 +1,8 @@
+---
+source: src/tests.rs
+assertion_line: 61
+expression: "format!(\"{:?}\", report)"
+
+---
+Unable to talk to daemon
+

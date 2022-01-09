@@ -1,0 +1,12 @@
+---
+source: src/tests.rs
+assertion_line: 45
+expression: "format!(\"{:?}\", report)"
+
+---
+Oh no, this program crashed!
+
+[31mUnable to talk to daemon[0m
+Caused by:
+
+[36mPlease report this issue to ...[0m
