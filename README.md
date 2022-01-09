@@ -46,16 +46,7 @@ Caused by:
 
 and you get a flavored error report:
 
-<pre>
-Oh no, this program crashed!
-
-<span style="color: #cc0000">Unable to talk to daemon</span>
-Caused by:
-   0: <span style="color: #c4a000">Connection refused</span>
-   1: <span style="color: #c4a000">os error 61</span>
-
-<span style="color: #06989a">Please report this issue to ...</span>
-</pre>
+![snapshot](snapshot.svg)
 
 ## Additional helpers
 
