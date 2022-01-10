@@ -23,7 +23,7 @@ but you can always create your own templates easily!
 First, get started by reading the [handlebars guide](https://handlebarsjs.com/guide/).
 Handlebars is a simple template language, so this won't be hard.
 
-Next, start writing your own template! You may gain some idea from [builtin templates](src/templates.rs).
+Next, start writing your own template! You may gain some idea from [builtin templates](src/templates/).
 
 Notice that this crate provides you with [some handy helpers](#additional-helpers).
 Also, the `handlebars` crate this crate depends on also has some [custom helpers](https://docs.rs/handlebars/latest/handlebars/#built-in-helpers).
@@ -36,9 +36,12 @@ A minimal handler can be built with a template like this:
 Oh no, this program crashed!
 
 {{style "red" error}}
-Caused by:
+{{*set multi=(gt (len sources) 1)}}
 {{#each sources}}
-{{indent @index (style "yellow" this)}}
+{{#if @first}}
+{{style "black.bright" "Caused by:"}}
+{{/if}}
+{{indent (_if @root.multi @index null) (style "yellow" this)}}
 {{/each}}
 
 {{style "cyan" "Please report this issue to ..."}}
@@ -46,7 +49,7 @@ Caused by:
 
 and you get a flavored error report:
 
-![snapshot](snapshot.svg)
+![snapshot](snapshot.png)
 
 ## Additional helpers
 
@@ -69,6 +72,18 @@ This helper has three forms:
 - `indent <string> content` - Insert given string before every line.
 
 e.g, `{{indent @index this}}`
+
+### inline `_if` helper
+
+Inline version of `if` helper.
+
+e.g, `{{_if success "Yay!" "Oops!"}}`
+
+### `set` decorator
+
+Set local variables.
+
+e.g, `{{*set flag=true}}`
 
 ## License
 This project is licensed under [MIT License](LICENSE.txt).

@@ -3,11 +3,15 @@ use std::fmt::Write;
 
 use console::Style;
 use handlebars::{
-    handlebars_helper, Context, Handlebars, Helper, HelperDef, JsonValue, PathAndJson,
+    handlebars_helper, Context, Decorator, Handlebars, Helper, HelperDef, JsonValue, PathAndJson,
     RenderContext, RenderError, ScopedJson,
 };
 use indenter::{indented, Format, Inserter};
 use serde_json::Value;
+
+handlebars_helper!(InlineIfHelper: |condition: bool, if_branch: Json, else_branch: Json| {
+    if condition { if_branch } else { else_branch }.clone()
+});
 
 handlebars_helper!(StyleHelper: |style: str, content: str| {
     Style::from_dotted_str(style).apply_to(content).to_string()
@@ -77,4 +81,33 @@ fn indent(s: &str, f: Option<Format>) -> Result<String, RenderError> {
         .write_str(s)
         .map_err(|e| RenderError::from_error("`indent` helper: cannot generate output", e))?;
     Ok(buffer)
+}
+
+// a decorator mutates current context data
+// adopted from https://github.com/sunng87/handlebars-rust/blob/master/examples/decorator.rs.
+pub fn set_decorator(
+    d: &Decorator,
+    _: &Handlebars,
+    ctx: &Context,
+    rc: &mut RenderContext,
+) -> Result<(), RenderError> {
+    // get the input of decorator
+    let data_to_set = d.hash();
+    // retrieve the json value in current context
+    let ctx_data = ctx.data();
+
+    if let Value::Object(m) = ctx_data {
+        let mut new_ctx_data = m.clone();
+
+        for (k, v) in data_to_set {
+            new_ctx_data.insert(k.to_string(), v.value().clone());
+        }
+
+        rc.set_context(Context::wraps(new_ctx_data)?);
+        Ok(())
+    } else {
+        Err(RenderError::new(
+            "`set` decorator: Cannot extend non-object data",
+        ))
+    }
 }

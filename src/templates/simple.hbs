@@ -1,0 +1,8 @@
+{{error}}
+{{*set multi=(gt (len sources) 1)}}
+{{#each sources}}
+{{#if @first}}
+Caused by:
+{{/if}}
+{{indent (_if @root.multi @index null) this}}
+{{/each}}

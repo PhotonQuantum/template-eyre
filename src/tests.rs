@@ -7,15 +7,7 @@ use once_cell::sync::Lazy;
 use crate::templates::{COLORED_SIMPLE, SIMPLE};
 use crate::Hook;
 
-const DEMO: &str = r#"Oh no, this program crashed!
-
-{{style "red" error}}
-Caused by:
-{{#each sources}}
-{{indent @index (style "yellow" this)}}
-{{/each}}
-
-{{style "cyan" "Please report this issue to ..."}}"#;
+const DEMO: &str = include_str!("templates/demo.hbs");
 
 macro_rules! report {
     [$($e:literal),+] => {
