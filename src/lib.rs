@@ -20,11 +20,9 @@ pub struct Hook {
 impl Hook {
     pub fn new(
         eyre_tmpl: impl AsRef<str>,
-        panic_tmpl: impl AsRef<str>,
     ) -> Result<Self, RenderError> {
         let mut handlebars = Handlebars::new();
         handlebars.register_template_string("eyre", eyre_tmpl)?;
-        handlebars.register_template_string("panic", panic_tmpl)?;
         handlebars.register_helper("style", Box::new(StyleHelper));
         handlebars.register_helper("indent", Box::new(IndentHelper));
         handlebars.register_helper("_if", Box::new(InlineIfHelper));
@@ -37,11 +35,11 @@ impl Hook {
     }
 
     pub fn simple() -> Self {
-        Self::new(SIMPLE, "").expect("should render")
+        Self::new(SIMPLE).expect("should render")
     }
 
     pub fn colored_simple() -> Self {
-        Self::new(COLORED_SIMPLE, "").expect("should render")
+        Self::new(COLORED_SIMPLE).expect("should render")
     }
 
     pub fn install(self) -> Result<(), InstallError> {

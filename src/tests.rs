@@ -29,7 +29,7 @@ macro_rules! assert_snapshot {
 }
 
 fn must_report(name: &str, template: &str) {
-    let _guard = hack_install(Hook::new(template, "").unwrap());
+    let _guard = hack_install(Hook::new(template).unwrap());
     console::set_colors_enabled(true);
 
     let report = report!["Unable to talk to daemon"];

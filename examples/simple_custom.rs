@@ -5,7 +5,7 @@ use eyre::{Report, WrapErr};
 use template_eyre::Hook;
 
 fn main() -> Result<(), Report> {
-    Hook::new(include_str!("../src/templates/demo.hbs"), "")
+    Hook::new(include_str!("../src/templates/demo.hbs"))
         .unwrap()
         .install()
         .unwrap();
