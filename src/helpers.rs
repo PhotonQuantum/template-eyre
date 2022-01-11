@@ -100,7 +100,7 @@ pub fn set_decorator(
         let mut new_ctx_data = m.clone();
 
         for (k, v) in data_to_set {
-            new_ctx_data.insert(k.to_string(), v.value().clone());
+            new_ctx_data.insert((*k).to_string(), v.value().clone());
         }
 
         rc.set_context(Context::wraps(new_ctx_data)?);

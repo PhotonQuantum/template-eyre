@@ -1,13 +1,16 @@
+#![allow(clippy::default_trait_access)]
+
 use std::error::Error;
 use std::fmt::Formatter;
 
 use eyre::{EyreHandler, InstallError};
 use handlebars::{Handlebars, RenderError};
-use serde_json::json;
+use serde_json::{json, Map, Value};
 
 use crate::helpers::{set_decorator, IndentHelper, InlineIfHelper, StyleHelper};
 use crate::templates::{COLORED_SIMPLE, SIMPLE};
 
+pub mod ext;
 mod helpers;
 mod templates;
 #[cfg(test)]
@@ -18,9 +21,7 @@ pub struct Hook {
 }
 
 impl Hook {
-    pub fn new(
-        eyre_tmpl: impl AsRef<str>,
-    ) -> Result<Self, RenderError> {
+    pub fn new(eyre_tmpl: impl AsRef<str>) -> Result<Self, RenderError> {
         let mut handlebars = Handlebars::new();
         handlebars.register_template_string("eyre", eyre_tmpl)?;
         handlebars.register_helper("style", Box::new(StyleHelper));
@@ -34,10 +35,12 @@ impl Hook {
         Ok(hook)
     }
 
+    #[must_use]
     pub fn simple() -> Self {
         Self::new(SIMPLE).expect("should render")
     }
 
+    #[must_use]
     pub fn colored_simple() -> Self {
         Self::new(COLORED_SIMPLE).expect("should render")
     }
@@ -75,6 +78,7 @@ impl Hook {
     pub fn make_handler(&self, _e: &(dyn Error + 'static)) -> Handler {
         Handler {
             handlebars: self.handlebars.clone(),
+            sections: Default::default(),
         }
     }
 }
@@ -82,6 +86,7 @@ impl Hook {
 #[derive(Debug)]
 pub struct Handler {
     handlebars: Handlebars<'static>,
+    sections: Map<String, Value>,
 }
 
 impl EyreHandler for Handler {
@@ -90,12 +95,22 @@ impl EyreHandler for Handler {
             return core::fmt::Debug::fmt(error, f);
         }
 
-        match self.handlebars.render("eyre", &json!({
-            "error": error.to_string(),
-            "sources": std::iter::successors(error.source(), |e| (*e).source()).map(ToString::to_string).collect::<Vec<_>>()
-        })) {
+        let fields = {
+            let mut map = self.sections.clone();
+            map.insert(String::from("error"), error.to_string().into());
+            map.insert(
+                String::from("sources"),
+                std::iter::successors(error.source(), |e| (*e).source())
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .into(),
+            );
+            Value::Object(map)
+        };
+
+        match self.handlebars.render("eyre", &fields) {
             Ok(s) => f.write_str(s.as_str()),
-            Err(e) => panic!("Error occur when rendering eyre error: {}", e)
+            Err(e) => panic!("Error occur when rendering eyre error: {}", e),
         }
     }
 }

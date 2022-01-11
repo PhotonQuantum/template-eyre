@@ -1,9 +1,11 @@
 use std::error::Error;
+use std::fmt::{Display, Formatter};
 use std::sync::{Mutex, MutexGuard};
 
 use eyre::{eyre, EyreHandler, Report};
 use once_cell::sync::Lazy;
 
+use crate::ext::Section;
 use crate::templates::{COLORED_SIMPLE, SIMPLE};
 use crate::Hook;
 
@@ -20,6 +22,17 @@ fn simple() {
     must_report("simple", SIMPLE);
     must_report("colored_simple", COLORED_SIMPLE);
     must_report("demo", DEMO);
+}
+
+#[test]
+fn section() {
+    let _guard = hack_install(Hook::new("{{error}} {{key}}").unwrap());
+
+    let r = eyre!("boom").section("key", "somevalue");
+    assert_eq!(format!("{:?}", r), "boom somevalue");
+
+    let e: Result<(), _> = Err(AdhocError::new("e")).section("key", "somevalue");
+    assert_eq!(format!("{:?}", e.unwrap_err()), "e somevalue");
 }
 
 macro_rules! assert_snapshot {
@@ -57,6 +70,24 @@ type ErrorHook =
 
 static DYNAMIC_HOOK: Lazy<Mutex<Option<ErrorHook>>> = Lazy::new(|| Mutex::new(None));
 static TEST_GUARD: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
+
+#[derive(Debug)]
+struct AdhocError(String);
+
+impl AdhocError {
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn new(e: impl ToString) -> Self {
+        Self(e.to_string())
+    }
+}
+
+impl Display for AdhocError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Error for AdhocError {}
 
 fn hack_install(hook: Hook) -> MutexGuard<'static, ()> {
     let guard = TEST_GUARD.lock().unwrap();

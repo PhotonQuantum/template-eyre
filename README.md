@@ -13,7 +13,7 @@ in seconds.
 - [x] Sensible bundled handlers
 - [ ] Backtrace support
 - [ ] Panic handler
-- [ ] Custom fields support
+- [x] Custom fields support
 
 ## Write your own template
 
