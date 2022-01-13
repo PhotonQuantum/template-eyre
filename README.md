@@ -59,7 +59,7 @@ Color the output. Styles should be written at its "dotted" form.
  
 See [console's document](https://docs.rs/console/latest/console/struct.Style.html#implementations) for details.
 
-e.g, `{{style "black.bold.on_red" error}}`
+E.g., `{{style "black.bold.on_red" error}}`
 
 ### `indent` helper
 
@@ -71,19 +71,25 @@ This helper has three forms:
 - `indent <number> content` - Insert a number before the first line with the same indentation level as backtraces.
 - `indent <string> content` - Insert given string before every line.
 
-e.g, `{{indent @index this}}`
+E.g., `{{indent @index this}}`
 
 ### inline `_if` helper
 
 Inline version of `if` helper.
 
-e.g, `{{_if success "Yay!" "Oops!"}}`
+E.g., `{{_if success "Yay!" "Oops!"}}`
 
 ### `set` decorator
 
 Set local variables.
 
-e.g, `{{*set flag=true}}`
+E.g., `{{*set flag=true}}`
+
+### `concat` helper
+
+Concatenate strings.
+
+E.g., `{{concat "a" "b"}}`
 
 ## License
 This project is licensed under [MIT License](LICENSE.txt).

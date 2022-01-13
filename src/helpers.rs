@@ -7,6 +7,7 @@ use handlebars::{
     RenderContext, RenderError, ScopedJson,
 };
 use indenter::{indented, Format, Inserter};
+use itertools::Itertools;
 use serde_json::Value;
 
 handlebars_helper!(InlineIfHelper: |condition: bool, if_branch: Json, else_branch: Json| {
@@ -112,12 +113,37 @@ pub fn set_decorator(
     }
 }
 
+pub struct ConcatHelper;
+
+impl HelperDef for ConcatHelper {
+    fn call_inner<'reg: 'rc, 'rc>(
+        &self,
+        h: &Helper<'reg, 'rc>,
+        _: &'reg Handlebars<'reg>,
+        _: &'rc Context,
+        _: &mut RenderContext<'reg, 'rc>,
+    ) -> Result<ScopedJson<'reg, 'rc>, RenderError> {
+        Ok(ScopedJson::Derived(Value::String(
+            h.params()
+                .iter()
+                .map(|i| i.value().as_str())
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| {
+                    RenderError::new("`concat` helper: only accepts string parameter(s)")
+                })?
+                .into_iter()
+                .join(""),
+        )))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use console::style as styled;
     use handlebars::Handlebars;
     use serde_json::{json, Value};
 
+    use crate::helpers::ConcatHelper;
     use crate::{set_decorator, IndentHelper, InlineIfHelper, StyleHelper};
 
     #[test]
@@ -172,6 +198,18 @@ mod tests {
                 .render_template("{{*set cat=\"meow\"}}\n{{cat}}", &json!({}))
                 .unwrap(),
             "meow"
+        );
+    }
+
+    #[test]
+    fn concat() {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_helper("concat", Box::new(ConcatHelper));
+        assert_eq!(
+            handlebars
+                .render_template(r#"{{concat "a" b}}"#, &json!({"b": "meow"}))
+                .unwrap(),
+            r#"ameow"#
         );
     }
 }

@@ -1,6 +1,6 @@
 #![allow(clippy::default_trait_access)]
 #![warn(missing_docs)]
-#![doc = include_str!("../README.md")]
+#![doc = include_str ! ("../README.md")]
 
 use std::error::Error;
 use std::fmt::Formatter;
@@ -9,7 +9,7 @@ use eyre::{EyreHandler, InstallError};
 use handlebars::{Handlebars, RenderError};
 use serde_json::{Map, Value};
 
-use crate::helpers::{set_decorator, IndentHelper, InlineIfHelper, StyleHelper};
+use crate::helpers::{set_decorator, ConcatHelper, IndentHelper, InlineIfHelper, StyleHelper};
 use crate::templates::{COLORED_SIMPLE, SIMPLE};
 
 pub mod ext;
@@ -35,6 +35,7 @@ impl Hook {
         handlebars.register_helper("indent", Box::new(IndentHelper));
         handlebars.register_helper("_if", Box::new(InlineIfHelper));
         handlebars.register_decorator("set", Box::new(set_decorator));
+        handlebars.register_helper("concat", Box::new(ConcatHelper));
 
         let hook = Self { handlebars };
 
