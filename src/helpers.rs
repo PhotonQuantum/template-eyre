@@ -111,3 +111,67 @@ pub fn set_decorator(
         ))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use console::style as styled;
+    use handlebars::Handlebars;
+    use serde_json::{json, Value};
+
+    use crate::{set_decorator, IndentHelper, InlineIfHelper, StyleHelper};
+
+    #[test]
+    fn inline_if() {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_helper("_if", Box::new(InlineIfHelper));
+        handlebars
+            .register_template_string("test", r#"{{_if branch "a" "b"}}"#)
+            .unwrap();
+        assert_eq!(
+            handlebars.render("test", &json!({"branch": true})).unwrap(),
+            "a"
+        );
+        assert_eq!(
+            handlebars
+                .render("test", &json!({"branch": false}))
+                .unwrap(),
+            "b"
+        );
+    }
+
+    #[test]
+    fn style() {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_helper("style", Box::new(StyleHelper));
+        assert_eq!(
+            handlebars
+                .render_template(r#"{{style "cyan" "meow"}}"#, &Value::Null)
+                .unwrap(),
+            styled("meow").cyan().to_string()
+        );
+    }
+
+    #[test]
+    fn indent() {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_helper("indent", Box::new(IndentHelper));
+        assert_eq!(
+            handlebars
+                .render_template(r#"{{indent "meow"}}"#, &Value::Null)
+                .unwrap(),
+            "    meow"
+        );
+    }
+
+    #[test]
+    fn set() {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_decorator("set", Box::new(set_decorator));
+        assert_eq!(
+            handlebars
+                .render_template("{{*set cat=\"meow\"}}\n{{cat}}", &json!({}))
+                .unwrap(),
+            "meow"
+        );
+    }
+}
