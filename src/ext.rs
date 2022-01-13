@@ -1,10 +1,15 @@
+//! Helpers for adding custom fields to error reports
+
 use eyre::Report;
 use serde_json::Value;
 
 use crate::Handler;
 
+/// A helper trait to attach additional fields to error reports to be referenced in the handlebars template.
 pub trait Section {
+    /// The output type
     type Output;
+    /// Attach a kv pair to the final error report.
     fn section(self, key: impl ToString, value: impl Into<Value>) -> Self::Output;
 }
 

@@ -1,11 +1,13 @@
 #![allow(clippy::default_trait_access)]
+#![warn(missing_docs)]
+#![doc = include_str!("../README.md")]
 
 use std::error::Error;
 use std::fmt::Formatter;
 
 use eyre::{EyreHandler, InstallError};
 use handlebars::{Handlebars, RenderError};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value};
 
 use crate::helpers::{set_decorator, IndentHelper, InlineIfHelper, StyleHelper};
 use crate::templates::{COLORED_SIMPLE, SIMPLE};
@@ -16,11 +18,16 @@ mod templates;
 #[cfg(test)]
 mod tests;
 
+/// An eyre reporting hook.
 pub struct Hook {
     handlebars: Handlebars<'static>,
 }
 
 impl Hook {
+    /// Create an eyre handler hook with the given handlebars template.
+    ///
+    /// # Errors
+    /// `RenderError` if given template is invalid.
     pub fn new(eyre_tmpl: impl AsRef<str>) -> Result<Self, RenderError> {
         let mut handlebars = Handlebars::new();
         handlebars.register_template_string("eyre", eyre_tmpl)?;
@@ -30,48 +37,28 @@ impl Hook {
         handlebars.register_decorator("set", Box::new(set_decorator));
 
         let hook = Self { handlebars };
-        hook.validate()?;
 
         Ok(hook)
     }
 
+    /// Create a hook to construct a simple eyre error handler.
     #[must_use]
     pub fn simple() -> Self {
         Self::new(SIMPLE).expect("should render")
     }
 
+    /// Create a hook to construct a simple eyre error handler with color support.
     #[must_use]
     pub fn colored_simple() -> Self {
         Self::new(COLORED_SIMPLE).expect("should render")
     }
 
+    /// Install self as the global eyre handling hook via `eyre::set_hook`.
+    ///
+    /// # Errors
+    /// `InstallError` if failed to install self.
     pub fn install(self) -> Result<(), InstallError> {
         eyre::set_hook(Box::new(move |e| Box::new(self.make_handler(e))))
-    }
-
-    fn validate(&self) -> Result<(), RenderError> {
-        self.handlebars.render(
-            "eyre",
-            &json!({
-                "error": "<error>",
-                "sources": ["<source>"]
-            }),
-        )?;
-        self.handlebars.render(
-            "eyre",
-            &json!({
-                "error": "<error>",
-                "sources": ["<source1>", "<source2>"]
-            }),
-        )?;
-        self.handlebars.render(
-            "eyre",
-            &json!({
-                "error": "<error>",
-                "sources": ["<source1>", "<source2>", "<source3>"]
-            }),
-        )?;
-        Ok(())
     }
 
     #[doc(hidden)]
@@ -83,6 +70,7 @@ impl Hook {
     }
 }
 
+/// An eyre error handler which reports errors with given handlebars templates.
 #[derive(Debug)]
 pub struct Handler {
     handlebars: Handlebars<'static>,

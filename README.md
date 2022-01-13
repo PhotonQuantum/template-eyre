@@ -49,7 +49,7 @@ Oh no, this program crashed!
 
 and you get a flavored error report:
 
-![snapshot](snapshot.png)
+![snapshot](https://raw.githubusercontent.com/PhotonQuantum/template-eyre/master/snapshot.png)
 
 ## Additional helpers
 
