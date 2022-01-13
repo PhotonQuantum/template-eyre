@@ -25,6 +25,13 @@ fn simple() {
 }
 
 #[test]
+fn no_escape() {
+    let _guard = hack_install(Hook::new(r#""quoted": {{error}}"#).unwrap());
+    let r = eyre!(r#""quoted var""#);
+    assert_eq!(format!("{:?}", r), r#""quoted": "quoted var""#);
+}
+
+#[test]
 fn section() {
     let _guard = hack_install(Hook::new("{{error}} {{key}}").unwrap());
 

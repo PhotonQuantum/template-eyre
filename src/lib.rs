@@ -30,6 +30,7 @@ impl Hook {
     /// `RenderError` if given template is invalid.
     pub fn new(eyre_tmpl: impl AsRef<str>) -> Result<Self, RenderError> {
         let mut handlebars = Handlebars::new();
+        handlebars.register_escape_fn(id_escape);
         handlebars.register_template_string("eyre", eyre_tmpl)?;
         handlebars.register_helper("style", Box::new(StyleHelper));
         handlebars.register_helper("indent", Box::new(IndentHelper));
@@ -69,6 +70,10 @@ impl Hook {
             sections: Default::default(),
         }
     }
+}
+
+fn id_escape(s: &str) -> String {
+    s.to_string()
 }
 
 /// An eyre error handler which reports errors with given handlebars templates.
