@@ -72,7 +72,7 @@ static DYNAMIC_HOOK: Lazy<Mutex<Option<ErrorHook>>> = Lazy::new(|| Mutex::new(No
 static TEST_GUARD: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 #[derive(Debug)]
-struct AdhocError(String);
+pub struct AdhocError(pub String);
 
 impl AdhocError {
     #[allow(clippy::needless_pass_by_value)]
@@ -89,7 +89,7 @@ impl Display for AdhocError {
 
 impl Error for AdhocError {}
 
-fn hack_install(hook: Hook) -> MutexGuard<'static, ()> {
+pub fn hack_install(hook: Hook) -> MutexGuard<'static, ()> {
     let guard = TEST_GUARD.lock().unwrap();
     let mut dynamic_hook = DYNAMIC_HOOK.lock().unwrap();
     if dynamic_hook.is_none() {
