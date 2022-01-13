@@ -1,9 +1,12 @@
 [package]
 name = "template-eyre"
 description = "An error reporter for panics and `eyre::Report` with handlebars template support."
-version = "0.1.0"
+keywords = ["error", "eyre", "color", "template"]
+version = "0.1.0-alpha.1"
 edition = "2021"
 license = "MIT"
+repository = "https://github.com/PhotonQuantum/template-eyre"
+exclude = [".github/**/*", ".mergify.yml", "bacon.toml", ".gitignore"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
