@@ -38,10 +38,10 @@ Oh no, this program crashed!
 {{style "red" error}}
 {{*set multi=(gt (len sources) 1)}}
 {{#each sources}}
-{{#if @first}}
-{{style "black.bright" "Caused by:"}}
-{{/if}}
-{{indent (_if @root.multi @index null) (style "yellow" this)}}
+    {{#if @first}}
+        {{~style "black.bright" "Caused by:"}}
+    {{/if}}
+    {{~indent (_if @root.multi @index null) (style "yellow" this)}}
 {{/each}}
 
 {{style "cyan" "Please report this issue to ..."}}
