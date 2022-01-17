@@ -103,7 +103,7 @@ impl EyreHandler for Handler {
         };
 
         match self.handlebars.render("eyre", &fields) {
-            Ok(s) => f.write_str(s.as_str()),
+            Ok(s) => f.write_str(s.trim()),
             Err(e) => panic!("Error occur when rendering eyre error: {}", e),
         }
     }
