@@ -1,11 +1,10 @@
 ---
 source: src/tests.rs
-assertion_line: 69
+assertion_line: 72
 expression: "format!(\"{:?}\", report)"
 
 ---
 [31mUnable to talk to daemon[0m
-[38;5;8mCaused by:[0m
+[2mCaused by:[0m
    0: [33mConnection refused[0m
    1: [33mos error 61[0m
-

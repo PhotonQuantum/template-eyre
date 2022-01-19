@@ -39,7 +39,7 @@ Oh no, this program crashed!
 {{*set multi=(gt (len sources) 1)}}
 {{#each sources}}
     {{#if @first}}
-        {{~style "black.bright" "Caused by:"}}
+        {{~style "dim" "Caused by:"}}
     {{/if}}
     {{~indent (_if @root.multi @index null) (style "yellow" this)}}
 {{/each}}
