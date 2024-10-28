@@ -12,7 +12,7 @@ exclude = [".github/**/*", ".mergify.yml", "bacon.toml", ".gitignore"]
 [dependencies]
 console = "0.15"
 eyre = { version = "0.6", default-features = false }
-handlebars = "4.5"
+handlebars = "6.2"
 indenter = "0.3"
 itertools = "0.13"
 serde_json = "1.0"
